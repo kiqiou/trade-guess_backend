@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 
-from core.models.user import DailyStatistics, MyUser, Role, UserStatistics
+from core.models.user import DailyStatistics, User, Role, UserStatistics
 from core.serializers import DailyStatisticsSerializer, UserSerializer, UserStatisticsSerializer
 
 
@@ -18,17 +18,23 @@ def username_auth(request):
     
     role = Role.objects.get(name="client")
 
-    user, created = MyUser.objects.get_or_create(
+    user, created = User.objects.get_or_create(
         telegram_username=username,
         defaults={"role": role}
     )
 
-    user_stat, _ = UserStatistics.objects.get_or_create(user_id=user)
-    daily_user_stat, _ = DailyStatistics.objects.get_or_create(user_id=user)
+    if created:
+        token = Token.objects.create(user=user)
+    else:
+        token = Token.objects.get(user=user)
+
+    user_stat, _ = UserStatistics.objects.get_or_create(user=user)
+    daily_user_stat, _ = DailyStatistics.objects.get_or_create(user=user)
 
     return Response({
         "created": created,
         "user": UserSerializer(user).data,
         "statistics": UserStatisticsSerializer(user_stat).data,
         "daily_statistics": DailyStatisticsSerializer(daily_user_stat).data,
+        "token": token.key,
     }, status=200)

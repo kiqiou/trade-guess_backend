@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from core.models.user import (
     Role,
-    MyUser,
+    User,
     DailyStatistics,
     UserStatistics
 )
@@ -14,7 +14,7 @@ from core.models.game import (
 )
 
 admin.site.register(Role)
-admin.site.register(MyUser)
+admin.site.register(User)
 admin.site.register(DailyStatistics)
 admin.site.register(UserStatistics)
 
