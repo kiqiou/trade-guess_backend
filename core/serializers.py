@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from core.models.game import Asset, Attempt, ChartSnapshot
-from core.models.user import DailyStatistics, User, Role, UserStatistics
+from core.models.user import DailyStatistics, PlatformDailyActivity, User, Role, UserStatistics
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "telegram_username", "role", ]
+        fields = ["id", "telegram_username", "role", "is_active"]
 
 class DailyStatisticsSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -39,6 +39,11 @@ class UserStatisticsSerializer(serializers.ModelSerializer):
             "accuracy_percent", "week_accuracy",
             "month_accuracy", "accuracy"
         ]
+
+class PlatformDailyActivitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlatformDailyActivity
+        fields = "__all__"
 
 class AssetSerializer(serializers.ModelSerializer):
     class Meta:

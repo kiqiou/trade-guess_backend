@@ -7,10 +7,11 @@ class Role(models.Model):
 class User(AbstractUser):
     telegram_username = models.CharField(max_length=100, null=True, blank=True)
     role = models.ForeignKey('core.Role', on_delete=models.CASCADE, default=1)
+    is_active = models.BooleanField(default=True)
 
     groups = models.ManyToManyField(
         'auth.Group', 
-        related_name='core_user_set',  # Изменяем default related_name
+        related_name='core_user_set', 
         blank=True
     )
     user_permissions = models.ManyToManyField(
@@ -34,3 +35,10 @@ class UserStatistics(models.Model):
     accuracy_percent = models.SmallIntegerField(null=True)
     week_accuracy = models.SmallIntegerField(null=True)
     month_accuracy = models.SmallIntegerField(null=True)
+
+class PlatformDailyActivity(models.Model):
+    date = models.DateField(unique=True)
+    total_attempts = models.IntegerField(default=0)
+    correct_attempts = models.IntegerField(default=0)
+    average_accuracy = models.FloatField(default=0.0)
+    active_users = models.IntegerField(default=0)  
