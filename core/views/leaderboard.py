@@ -19,7 +19,6 @@ def build_leaderboard(user_stats, accuracy_field):
             "rating": rating,
         })
 
-    # сортировка по рейтингу
     leaderboard.sort(key=lambda x: x["rating"], reverse=True)
     return leaderboard
 
@@ -27,6 +26,30 @@ def build_leaderboard(user_stats, accuracy_field):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_leaderboard_week(request):
+    """
+    GET /api/leaderboard/get_leaderboard_week/
+
+    Принимает:
+        - ничего (только авторизацию по токену)
+
+    Возвращает:
+        {
+            "leaderboard": [
+                {
+                    "user": "kiqiou",
+                    "attempts": 3,
+                    "accuracy": 0,
+                    "rating": 0.0
+                }
+            ],
+            ...
+            "user_rank": 1
+        }
+
+    Действие:
+        - формирует топ-100 игроков по недельному рейтингу
+        - считает место текущего пользователя
+    """
     stats = UserStatistics.objects.select_related("user").all()
     leaderboard = build_leaderboard(stats, "week_accuracy")
 
@@ -47,6 +70,29 @@ def get_leaderboard_week(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_leaderboard_month(request):
+    """
+    GET /api/leaderboard/get_leaderboard_month/
+
+    Принимает:
+        - ничего (только авторизацию по токену)
+
+    Возвращает:
+        {
+            "leaderboard": [
+                {
+                    "user": "kiqiou",
+                    "attempts": 4,
+                    "accuracy": 40,
+                    "rating": 64.37751649736401
+                }
+            ],
+            "user_rank": 1
+        }
+
+    Действие:
+        - формирует топ-100 игроков по месячному рейтингу
+        - считает место текущего пользователя
+    """
     stats = UserStatistics.objects.select_related("user").all()
     leaderboard = build_leaderboard(stats, "month_accuracy")
 

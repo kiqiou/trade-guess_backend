@@ -14,6 +14,44 @@ from rest_framework.decorators import permission_classes, authentication_classes
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_challenge(request):
+    """
+    GET /api/game/chart/
+
+    Принимает:
+        - ничего (только авторизацию по токену)
+
+    Возвращает:
+    {
+        "attempt_id": 6,
+        "asset": "BTCUSD",
+        "visible_candles": [
+            {
+                "low": 29937.34,
+                "high": 1781.16,
+                "open": 16539.92,
+                "close": 20650.47
+            },
+            {
+                "low": 47329.24,
+                "high": 14681.69,
+                "open": 28212.58,
+                "close": 9095.16
+            },
+            {
+                "low": 46186.88,
+                "high": 1904.1,
+                "open": 4821.49,
+                "close": 14488.1
+            },
+            ...
+        ],
+        "remaining_attempts": 8
+    }
+
+    Действие:
+        - создаёт новую попытку для пользователя
+        - проверяет дневной лимит (10 попыток)
+    """
     user = request.user
     today = timezone.localdate()
 
@@ -50,6 +88,38 @@ def get_challenge(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def resolve_attempt(request, attempt_id):
+    """
+    POST /api/game/guess/<attempt_id>/
+
+    Принимает:
+        - decision (в теле запроса, строка: "LONG" или "SHORT")
+        {
+            "decision": "LONG"
+        }
+
+    Возвращает:
+        {
+            "success": true,
+            "last_visible_close": 12310.47,
+            "last_outcome_close": 42503.22,
+            "daily": {
+                "attempts": 2,
+                "correct": 1,
+                "accuracy": 50,
+                "streak": 1
+            },
+            "global": {
+                "total_attempts": 4,
+                "correct_attempts": 2,
+                "accuracy_percent": 50
+            }
+        }
+
+    Действие:
+        - фиксирует результат попытки
+        - обновляет дневную и глобальную статистику пользователя
+        - обновляет статистику платформы (PlatformDailyActivity)
+    """
     user = request.user
     decision = request.data.get("decision")
     if decision not in ("LONG", "SHORT"):

@@ -11,6 +11,65 @@ from core.serializers import DailyStatisticsSerializer, UserSerializer, UserStat
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def username_auth(request):
+    """
+    GET /api/user/auth/
+
+    Принимает:
+        - юзернейм
+        {
+            "username": "kiqiou"
+        }
+
+
+    Возвращает:
+    {
+        "created": false, // если пользователь уже зарегистрирован, то фолз, если создан, то тру
+        "user": {
+            "id": 1,
+            "telegram_username": "kiqiou",
+            "role": {
+                "id": 1,
+                "name": "client"
+            },
+            "is_active": false // или True если не забанен
+        },
+        "statistics": {
+            "id": 1,
+            "user": {
+                "id": 1,
+                "telegram_username": "kiqiou",
+                "role": {
+                    "id": 1,
+                    "name": "client"
+                },
+                "is_active": false
+            },
+            "total_attempts": 4,
+            "correct_attempts": 2,
+            "accuracy_percent": 50,
+            "week_accuracy": 40,
+            "month_accuracy": 40
+        },
+        "daily_statistics": {
+            "id": 1,
+            "user": {
+                "id": 1,
+                "telegram_username": "kiqiou",
+                "role": {
+                    "id": 1,
+                    "name": "client"
+                },
+                "is_active": false
+            },
+            "date": "2025-12-10",
+            "daily_attempts": 2,
+            "daily_correct_attempts": 1,
+            "daily_accuracy": 50,
+            "streak": 1
+        },
+        "token": "6e237cf5ea23ec49a923023109bca475a07cde0c"
+    }
+    """
     username = request.data.get("username")
 
     if not username:
